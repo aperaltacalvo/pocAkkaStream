@@ -14,7 +14,7 @@ object CamelDriver extends App {
 
 
   class CamelConsumer extends Consumer with ActorPublisher[String] {
-    def endpointUri = "stream:in"
+    def endpointUri = "rabbitmq://127.0.0.1:8081/consumerExchange?username=guest&password=guest&queue=cola1&declare=true"
 
     import akka.stream.actor.ActorPublisherMessage._
 
@@ -32,7 +32,7 @@ object CamelDriver extends App {
   }
 
   class CamelProducer extends Producer {
-    def endpointUri = "stream:out"
+    def endpointUri = "rabbitmq://127.0.0.1:8081/consumerExchange?username=guest&password=guest&queue=cola2&declare=true"
   }
 
   class CamelSubscriber extends ActorSubscriber {
