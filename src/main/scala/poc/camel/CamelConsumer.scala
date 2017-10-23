@@ -1,17 +1,17 @@
 package poc.camel
 
-import akka.camel.Consumer
+import akka.actor.{Actor, ActorRef}
+import akka.camel.{CamelMessage, Consumer}
 import akka.stream.actor.ActorPublisher
+import akka.stream.actor.ActorPublisherMessage.{Cancel, Request}
 
 class CamelConsumer extends Consumer with ActorPublisher[String] {
   def endpointUri = "rabbitmq://127.0.0.1:8081/consumerExchange?username=guest&password=guest&autoDelete=false&routingKey=camel&queue=cola1"
-
-  import akka.stream.actor.ActorPublisherMessage._
-
+  val actor=new AsyncMessageConsumer
   def receive = {
     case Request(_) => //ignored
     case Cancel =>
       context.stop(self)
-    case msg if totalDemand > 0 => onNext(msg.toString)
+    case msg =>  actor.sender().tell(msg.toString,actor.self)
   }
 }
