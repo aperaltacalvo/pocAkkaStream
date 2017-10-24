@@ -8,6 +8,7 @@ import poc.akkastream.camel.{CamelConsumer, CamelSubscriber}
 import poc.akkastream.protocol.{ACK, INITMESSAGE, ONCOMPLETE}
 import poc.akkastream.publisher.{Publisher, PublisherBase}
 import poc.akkastream.AsyncMessageConsumer
+import poc.akkastream.kafka.{KafkaConsumer, KafkaProducer}
 
 object MainStream extends App {
 
@@ -21,12 +22,24 @@ object MainStream extends App {
   })
   val flowIdentifier = Flow[String].filter(c => c.contains("pepe")).map(s => s.replace("pepe", "Sr. Pepe"))
 
-  val publish: PublisherBase = Publisher.apply
-  publish.basicPublish("localhost", 8081, "hola:soy:pepe")("consumerExchange", "cola1", "camel", 5000)
+  /** Publishing **/
+  publishInRabbit
+  publishInKafka
+  /** Publishing **/
 
   val actorSource =  source via flowFormat via flowIdentifier to sink run()
 
   val asyncMessageActor = system.actorOf(Props(new AsyncMessageConsumer(actorSource)))
   val camelConsumer = system.actorOf(Props(new CamelConsumer(actorRef = asyncMessageActor)))
 
+  private def publishInRabbit = {
+    val publish: PublisherBase = Publisher.apply
+    publish.basicPublish("localhost", 8081, "hola:soy:pepe")("consumerExchange", "cola1", "camel", 5000)
+  }
+
+  private def publishInKafka = {
+    KafkaProducer.k.produce
+  }
 }
+
+
