@@ -17,17 +17,17 @@ object MainStream extends App {
 
   val source = Source.actorRef(50000,OverflowStrategy.fail)
   val sink = Sink.actorRefWithAck[String](system.actorOf(Props[CamelSubscriber]),INITMESSAGE,ACK,ONCOMPLETE, th => th.getMessage)
-  val flowFormat = Flow[String].map(s => {
-    s.split(":").filterNot(_.exists(_.isDigit)).mkString(" ")
-  })
+  val flowFormat = Flow[String].map(s => s.toString)
+    //s.split(":").filterNot(_.exists(_.isDigit)).mkString(" ")
+
   val flowIdentifier = Flow[String].filter(c => c.contains("pepe")).map(s => s.replace("pepe", "Sr. Pepe"))
 
   /** Publishing **/
-  publishInRabbit
+  //publishInRabbit
   publishInKafka
   /** Publishing **/
 
-  val actorSource =  source /*via flowFormat via flowIdentifier*/ to sink run()
+  val actorSource =  source via flowFormat via flowIdentifier to sink run()
 
   val asyncMessageActor = system.actorOf(Props(new AsyncMessageConsumer(actorSource)))
 
