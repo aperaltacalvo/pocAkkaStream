@@ -1,12 +1,13 @@
-package poc.camel.main
+package poc.akkastream.main
 
 import akka.actor.{ActorSystem, Props}
 import akka.camel.CamelMessage
 import akka.stream.scaladsl.{Flow, Sink, Source}
 import akka.stream.{ActorMaterializer, OverflowStrategy}
-import poc.camel.protocol.{ACK, INITMESSAGE, ONCOMPLETE}
-import poc.camel.publisher.{Publisher, PublisherBase}
-import poc.camel.{AsyncMessageConsumer, CamelConsumer, CamelSubscriber}
+import poc.akkastream.camel.{CamelConsumer, CamelSubscriber}
+import poc.akkastream.protocol.{ACK, INITMESSAGE, ONCOMPLETE}
+import poc.akkastream.publisher.{Publisher, PublisherBase}
+import poc.akkastream.AsyncMessageConsumer
 
 object MainStream extends App {
 
@@ -21,8 +22,7 @@ object MainStream extends App {
   val flowIdentifier = Flow[String].filter(c => c.contains("pepe")).map(s => s.replace("pepe", "Sr. Pepe"))
 
   val publish: PublisherBase = Publisher.apply
-  publish.basicPublish("192.168.16.172", 8081, "hola:soy:pepe", "consumerExchange", "cola1", "camel", 5000)
-
+  publish.basicPublish("localhost", 8081, "hola:soy:pepe")("consumerExchange", "cola1", "camel", 5000)
 
   val actorSource =  source via flowFormat via flowIdentifier to sink run()
 

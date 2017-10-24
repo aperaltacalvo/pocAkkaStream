@@ -1,4 +1,4 @@
-package poc.camel
+package poc.akkastream
 
 import akka.actor.ActorRef
 import akka.stream.actor.ActorPublisher

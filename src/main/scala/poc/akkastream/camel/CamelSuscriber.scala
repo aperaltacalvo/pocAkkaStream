@@ -1,8 +1,7 @@
-package poc.camel
+package poc.akkastream.camel
 
-import akka.camel.CamelMessage
 import akka.stream.actor.{ActorSubscriber, OneByOneRequestStrategy}
-import poc.camel.protocol.{ACK, INITMESSAGE}
+import poc.akkastream.protocol.{ACK, INITMESSAGE}
 
 class CamelSubscriber extends ActorSubscriber {
 

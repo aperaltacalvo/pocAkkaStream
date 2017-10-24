@@ -1,4 +1,4 @@
-package poc.camel.publisher
+package poc.akkastream.publisher
 
 import com.rabbitmq.client.{Channel, MessageProperties}
 
