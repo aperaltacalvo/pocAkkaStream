@@ -1,8 +1,10 @@
 package poc.akkastream.kafka
 
 import akka.Done
+import akka.actor.ActorRef
 import akka.kafka.Subscriptions
 import akka.kafka.scaladsl.Consumer
+import akka.stream.actor.ActorPublisher
 import akka.stream.scaladsl.Sink
 import org.apache.kafka.clients.consumer.ConsumerRecord
 
@@ -10,27 +12,22 @@ import scala.concurrent.Future
 import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
 
-object KafkaConsumer extends App {
-  val k: KafkaConsumer = new KafkaConsumer
-  k.consume
-}
 
-class KafkaConsumer extends KafkaConn {
+class KafkaConsumer(actorRef:ActorRef) extends KafkaConn with ActorPublisher[String]{
 
   def consume = {
-    val done =
       Consumer.plainSource(consumerSettings, Subscriptions.topics("topic1"))
-        .mapAsync(1)(doSomething)
+        .map(doSomething)
         .runWith(Sink.ignore)
 
-    done.onComplete {
-      case Success(value) => println(s"Got the callback, meaning = $value")
-      case Failure(e) => e.printStackTrace
-    }
   }
 
-  def doSomething(record: ConsumerRecord[Array[Byte], String]): Future[Done] = {
-    println(s"Consumed: ${record.value}")
-    Future.successful(Done)
+  def doSomething(record: ConsumerRecord[Array[Byte], String]): Unit = {
+    println(record.value())
+    actorRef ! record.value()
+  }
+
+  override def receive = {
+    case msg:String => consume
   }
 }

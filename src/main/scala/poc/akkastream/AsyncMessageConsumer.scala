@@ -8,6 +8,7 @@ class AsyncMessageConsumer(camelActor:ActorRef) extends ActorPublisher[String] {
 
   override def receive = {
     case msg:String => camelActor ! msg
+      println(msg + "AscynMessage Joder")
     case Cancel =>
       context.stop(self)
 
