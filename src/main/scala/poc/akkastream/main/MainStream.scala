@@ -17,21 +17,26 @@ object MainStream extends App {
 
   val source = Source.actorRef(50000,OverflowStrategy.fail)
   val sink = Sink.actorRefWithAck[String](system.actorOf(Props[CamelSubscriber]),INITMESSAGE,ACK,ONCOMPLETE, th => th.getMessage)
+  val sink2 = Sink.actorRefWithAck[String](system.actorOf(Props[CamelSubscriber]),INITMESSAGE,ACK,ONCOMPLETE, th => th.getMessage)
+
   val flowFormat = Flow[String].map(s => s.toString)
     //s.split(":").filterNot(_.exists(_.isDigit)).mkString(" ")
 
   val flowIdentifier = Flow[String].filter(c => c.contains("pepe")).map(s => s.replace("pepe", "Sr. Pepe"))
 
   /** Publishing **/
-  //publishInRabbit
+  publishInRabbit
   publishInKafka
   /** Publishing **/
 
-  val actorSource =  source via flowFormat via flowIdentifier to sink run()
+  val actorSource =  source /*via flowFormat via flowIdentifier*/ to sink run()
+  val actorSource2 =  source /*via flowFormat via flowIdentifier*/ to sink2 run()
 
   val asyncMessageActor = system.actorOf(Props(new AsyncMessageConsumer(actorSource)))
+  val asyncMessageActor2 = system.actorOf(Props(new AsyncMessageConsumer(actorSource2)))
 
-  val kafkaConsumer = system.actorOf(Props(new KafkaConsumer(actorRef = asyncMessageActor)))
+
+  val kafkaConsumer = system.actorOf(Props(new KafkaConsumer(actorRef = asyncMessageActor2)))
   kafkaConsumer.tell("",kafkaConsumer)
   val camelConsumer = system.actorOf(Props(new CamelConsumer(actorRef = asyncMessageActor)))
 
