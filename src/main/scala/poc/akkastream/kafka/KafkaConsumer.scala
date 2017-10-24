@@ -20,7 +20,7 @@ class KafkaConsumer extends KafkaConn {
   def consume = {
     val done =
       Consumer.plainSource(consumerSettings, Subscriptions.topics("topic1"))
-        .mapAsync(1)(save)
+        .mapAsync(1)(doSomething)
         .runWith(Sink.ignore)
 
     done.onComplete {
@@ -29,7 +29,7 @@ class KafkaConsumer extends KafkaConn {
     }
   }
 
-  def save(record: ConsumerRecord[Array[Byte], String]): Future[Done] = {
+  def doSomething(record: ConsumerRecord[Array[Byte], String]): Future[Done] = {
     println(s"Consumed: ${record.value}")
     Future.successful(Done)
   }
