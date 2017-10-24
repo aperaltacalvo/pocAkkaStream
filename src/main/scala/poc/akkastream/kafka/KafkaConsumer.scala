@@ -1,16 +1,16 @@
 package poc.akkastream.kafka
 
 import akka.Done
-import akka.kafka.{ConsumerSettings, Subscriptions}
+import akka.kafka.Subscriptions
 import akka.kafka.scaladsl.Consumer
 import akka.stream.scaladsl.Sink
-import org.apache.kafka.clients.consumer.{ConsumerConfig, ConsumerRecord}
-import org.apache.kafka.common.serialization.{ByteArrayDeserializer, StringDeserializer}
+import org.apache.kafka.clients.consumer.ConsumerRecord
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
+import scala.concurrent.ExecutionContext.Implicits.global
 
-object KafkaConsumer{
+object KafkaConsumer extends App {
   val k: KafkaConsumer = new KafkaConsumer
   k.consume
 }
@@ -30,7 +30,7 @@ class KafkaConsumer extends KafkaConn {
   }
 
   def save(record: ConsumerRecord[Array[Byte], String]): Future[Done] = {
-    println(s"DB.save: ${record.value}")
+    println(s"Consumed: ${record.value}")
     Future.successful(Done)
   }
 }
