@@ -22,7 +22,7 @@ trait KafkaConn {
   implicit val materializer = ActorMaterializer()
 
   val producerSettings = ProducerSettings(system, new ByteArraySerializer, new StringSerializer)
-    .withBootstrapServers("172.17.0.4:9092")
+    .withBootstrapServers("192.168.16.172:9092")
 
 }
 
@@ -36,7 +36,7 @@ class KafkaProducer extends KafkaConn {
       .map { elem =>
         new ProducerRecord[Array[Byte], String]("topic1", elem)
       }
-      .runWith(Producer.plainSink(producerSettings,kafkaProducer))
+      .runWith(Producer.plainSink(producerSettings))
 
     done.onComplete {
       case Success(value) => println(s"Got the callback, meaning = $value")
