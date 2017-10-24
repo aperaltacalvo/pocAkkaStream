@@ -17,12 +17,16 @@ object KafkaProducer extends App {
   k produce
 }
 
-class KafkaProducer {
+trait KafkaConn {
   implicit val system = ActorSystem("some-system")
   implicit val materializer = ActorMaterializer()
 
   val producerSettings = ProducerSettings(system, new ByteArraySerializer, new StringSerializer)
     .withBootstrapServers("172.17.0.4:9092")
+
+}
+
+class KafkaProducer extends KafkaConn {
 
   def produce = {
     val list = List.range(1, 500).map(l => "Kafka - " + l)
