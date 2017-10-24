@@ -8,7 +8,7 @@ import poc.akkastream.camel.{CamelConsumer, CamelSubscriber}
 import poc.akkastream.protocol.{ACK, INITMESSAGE, ONCOMPLETE}
 import poc.akkastream.publisher.{Publisher, PublisherBase}
 import poc.akkastream.AsyncMessageConsumer
-import poc.akkastream.kafka.{KafkaConsumer, KafkaConsumer3, KafkaProducer}
+import poc.akkastream.kafka.{KafkaConsumer, KafkaProducer}
 
 object MainStream extends App {
 

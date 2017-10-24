@@ -4,11 +4,10 @@ import akka.actor.ActorRef
 import akka.stream.actor.ActorPublisher
 import akka.stream.actor.ActorPublisherMessage.Cancel
 
-class AsyncMessageConsumer(camelActor:ActorRef) extends ActorPublisher[String] {
+class AsyncMessageConsumer(actorRef:ActorRef) extends ActorPublisher[String] {
 
   override def receive = {
-    case msg:String => camelActor ! msg
-      println(msg + "AscynMessage Joder")
+    case msg:String => actorRef ! msg
     case Cancel =>
       context.stop(self)
 
