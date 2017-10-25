@@ -16,35 +16,35 @@ object MainStream extends App {
 
   //Define sources of akka stream
   val sourceRabbit = initSource(bufferSize = 5000)
-  val sourceKafka = initSource(bufferSize = 5000)
+  val sourceKafka = initSource(bufferSize = 50000)
 
 
   //Define sink of akka stream
   val sinkRabbit = initSink(actorSink=Props[CamelSubscriber])
   val sinkKafka = initSink(actorSink=Props[CamelSubscriber])
 
-  val flowFormat = Flow[String].map(s => s.toString)
+  val flowFormat = Flow[Any].map(s => s.toString)
     //s.split(":").filterNot(_.exists(_.isDigit)).mkString(" ")
   val flowIdentifier = Flow[String].filter(c => c.contains("pepe")).map(s => s.replace("pepe", "Sr. Pepe"))
 
   /** Publishing in rabbit and kafka**/
-  publishInRabbit
+ // publishInRabbit
   publishInKafka
   /** Publishing in rabbit and kafka**/
 
 
     //Init streams
-  val actorSourceRabbit =  sourceRabbit /*via flowFormat via flowIdentifier*/ to sinkRabbit run()
+//  val actorSourceRabbit =  sourceRabbit via flowFormat /*via flowIdentifier*/ to sinkRabbit run()
   val actorSourceKafka =  sourceKafka /*via flowFormat via flowIdentifier*/ to sinkKafka run()
 
   //Init source actors
-  val asyncMessageActorRabbit = system.actorOf(Props(new AsyncMessageConsumer(actorSourceRabbit)))
+ // val asyncMessageActorRabbit = system.actorOf(Props(new AsyncMessageConsumer(actorSourceRabbit)))
   val asyncMessageActorKafka = system.actorOf(Props(new AsyncMessageConsumer(actorSourceKafka)))
 
 
   //Init consumers from kafka and rabbit
   val kafkaConsumer = initConsumersFromBrokerKafka(asyncMessageActorKafka)
-  val camelConsumer = initConsumersFromBrokerRabbit(asyncMessageActorRabbit)
+//  val camelConsumer = initConsumersFromBrokerRabbit(asyncMessageActorRabbit)
 
 
 

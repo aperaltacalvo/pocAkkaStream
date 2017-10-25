@@ -23,8 +23,7 @@ class KafkaConsumer(actorRef:ActorRef) extends KafkaConn with ActorPublisher[Str
   }
 
   def doSomething(record: ConsumerRecord[Array[Byte], String]): Unit = {
-    println(record.value())
-    actorRef ! record.value()
+    actorRef ! record.value().toString
   }
 
   override def receive = {

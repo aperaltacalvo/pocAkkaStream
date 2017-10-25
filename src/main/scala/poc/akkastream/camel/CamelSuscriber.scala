@@ -8,10 +8,9 @@ class CamelSubscriber extends ActorSubscriber {
   override val requestStrategy = OneByOneRequestStrategy
 
   override def receive = {
-    case msg =>
+    case msg:String =>
       println("received %s" format msg)
       sender ! ACK
-
     case INITMESSAGE =>
       println(s"initMessage")
       sender ! ACK
