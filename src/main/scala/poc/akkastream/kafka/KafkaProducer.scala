@@ -9,10 +9,10 @@ import scala.util.{Failure, Success}
 
 class KafkaProducer extends KafkaConn {
 
-  def produce = {
+  def produce(message: String) = {
     val list = List.range(1, 500).map(l => "Kafka - " + l)
     val done = Source(list)
-      .map(_.concat(". fuck yeah!"))
+      .map(_.concat(message))
       .map { elem =>
         new ProducerRecord[Array[Byte], String]("topic1", elem)
       }

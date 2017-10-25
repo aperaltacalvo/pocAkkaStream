@@ -22,9 +22,14 @@ object MainStream extends App {
   val sinkRabbit = initSink(actorSink = Props[CamelSubscriber])
   val sinkKafka = initSink(actorSink = Props[CamelSubscriber])
 
-  val flowFormat = Flow[Any].map(s => s.toString)
+  val flowFormat = Flow[String].map(_.filterNot(_.isDigit).toUpperCase)
   //s.split(":").filterNot(_.exists(_.isDigit)).mkString(" ")
-  val flowIdentifier = Flow[String].filter(c => c.contains("pepe")).map(s => s.replace("pepe", "Sr. Pepe"))
+  val flowIdentifier = Flow[String].map(message => {
+    message match {
+      case message if message contains("rabbit") => message + " --- FROM RABBIT BROKER"
+      case message if message contains("kafka") => message + " --- FROM KAFKA BROKER"
+    }
+  })
 
   /** Publishing in rabbit and kafka **/
   publishInRabbit
@@ -33,8 +38,8 @@ object MainStream extends App {
 
 
   //Init streams
-  val actorSourceRabbit = sourceRabbit via flowFormat /*via flowIdentifier*/ to sinkRabbit run()
-  val actorSourceKafka = sourceKafka via flowFormat /* via flowIdentifier */ to sinkKafka run()
+  val actorSourceRabbit = sourceRabbit via flowFormat via flowIdentifier to sinkRabbit run()
+  val actorSourceKafka = sourceKafka via flowFormat via flowIdentifier to sinkKafka run()
 
   //Init source actors
   val asyncMessageActorRabbit = system.actorOf(Props(new AsyncMessageConsumer(actorSourceRabbit)))
@@ -53,7 +58,7 @@ object MainStream extends App {
 
   private def publishInKafka = {
     val kafka: KafkaProducer = new KafkaProducer
-    kafka.produce
+    kafka.produce("Hola vengo de kafka")
   }
 
   private def initSink(actorSink: Props) = {
