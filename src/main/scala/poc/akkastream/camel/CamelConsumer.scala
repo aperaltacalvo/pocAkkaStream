@@ -7,7 +7,7 @@ import akka.stream.actor.ActorPublisherMessage.Cancel
 
 class CamelConsumer(actorRef: ActorRef) extends Consumer with ActorPublisher[String]{
 
-  def endpointUri = "rabbitmq://localhost:8081/consumerExchange?username=guest&password=guest&autoDelete=false&routingKey=camel&queue=cola1"
+  def endpointUri = "rabbitmq://192.168.16.172:8081/consumerExchange?username=guest&password=guest&autoDelete=false&routingKey=camel&queue=cola1"
 
   def receive = {
     case Cancel => context.stop(self)
