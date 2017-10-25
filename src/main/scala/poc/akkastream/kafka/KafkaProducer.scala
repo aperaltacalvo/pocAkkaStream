@@ -7,16 +7,10 @@ import org.apache.kafka.clients.producer.ProducerRecord
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success}
 
-object KafkaProducer extends App {
-  val k: KafkaProducer = new KafkaProducer
-  k produce
-}
-
 class KafkaProducer extends KafkaConn {
 
   def produce = {
     val list = List.range(1, 500).map(l => "Kafka - " + l)
-    val kafkaProducer = producerSettings.createKafkaProducer()
     val done = Source(list)
       .map(_.concat(". fuck yeah!"))
       .map { elem =>
