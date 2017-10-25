@@ -14,6 +14,8 @@ class CamelSubscriber extends ActorSubscriber {
     case INITMESSAGE =>
       println(s"initMessage")
       sender ! ACK
-
+    case msg =>
+      println("Untyped Message %s" format msg)
+      sender ! ACK
   }
 }

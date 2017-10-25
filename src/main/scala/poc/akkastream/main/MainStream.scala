@@ -26,9 +26,10 @@ object MainStream extends App {
   //s.split(":").filterNot(_.exists(_.isDigit)).mkString(" ")
   val flowIdentifier = Flow[String].map(message => {
     message match {
-      case message if message contains("rabbit") => message + " --- FROM RABBIT BROKER"
-      case message if message contains("kafka") => message + " --- FROM KAFKA BROKER"
+      case message if message contains("RABBIT") => message + " --- FROM RABBIT BROKER"
+      case message if message contains("KAFKA") => message + " --- FROM KAFKA BROKER"
     }
+
   })
 
   /** Publishing in rabbit and kafka **/
@@ -38,7 +39,7 @@ object MainStream extends App {
 
 
   //Init streams
-  val actorSourceRabbit = sourceRabbit via flowFormat via flowIdentifier to sinkRabbit run()
+  val actorSourceRabbit = sourceRabbit via flowFormat  via flowIdentifier to sinkRabbit run()
   val actorSourceKafka = sourceKafka via flowFormat via flowIdentifier to sinkKafka run()
 
   //Init source actors
