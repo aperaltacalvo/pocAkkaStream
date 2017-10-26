@@ -4,7 +4,7 @@
 
 * ```docker pull rabbitmq:latest```
 
-* ```docker run -d --hostname my-rabbit --name some-rabbit -p 8080:15672 -p 8081:5671 rabbitmq```
+* ```docker run -d --hostname my-rabbit --name some-rabbit -p 8080:15672 -p 8081:5672 rabbitmq```
 
 to enable management console from `localhost:8080`
 
