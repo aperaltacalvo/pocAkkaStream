@@ -19,7 +19,7 @@ object LaunchStream extends App {
 
   //Scenario with 1000 buffered
   val camelConsumerActor = consumerCamelActor
-  graphCamelScenario(sourceForCamel(camelConsumerActor), sinkForCamel(consumerCamelActor), 1000)
+  graphCamelScenario(sourceForCamel(camelConsumerActor), sinkForCamel(camelConsumerActor), 1000).run()
 
 
   /** CAMEL AKKA STREAMING **/
@@ -40,7 +40,7 @@ object LaunchStream extends App {
 
   private def publishInRabbit = {
     val publish: PublisherBase = PublisherMain.apply
-    publish.basicPublish("localhost", 8081, "hola vengo de rabbit")("consumerExchange", "cola1", "camel", 5000)
+    publish.basicPublish("localhost", 8081, "hola vengo de rabbit")("consumerExchange", "cola1", "camel", 10000)
   }
 
   private def consumerCamelActor = system.actorOf(Props[CamelConsumer])
