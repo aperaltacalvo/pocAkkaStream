@@ -1,6 +1,8 @@
-package poc.camel.publisher
+package poc.akkastream.publisher
 
 import com.rabbitmq.client.{Channel, MessageProperties}
+
+import scala.util.Random
 
 object Publisher{
   def apply: Publisher = new Publisher()
@@ -8,7 +10,7 @@ object Publisher{
 
 protected class Publisher extends PublisherBase {
 
-  def basicPublish(host: String, port: Int, messageToSend: String, exchangeName: String,
+  def basicPublish(host: String, port: Int, messageToSend: String) (exchangeName: String,
                    queueStr: String, routingKey: String, numMaxToSend: Int) = {
 
     def config = {
@@ -20,7 +22,7 @@ protected class Publisher extends PublisherBase {
       val connection = factory.newConnection
       val channel = connection.createChannel
 
-      val message = messageToSend
+      val message = messageToSend + ":" + Random.nextInt()
       channel.exchangeDeclare(exchangeName, "direct", true)
       channel.queueDeclare(queueStr, true, false, false, null)
       channel.queueBind(queueStr, exchangeName, routingKey)

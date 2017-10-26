@@ -1,4 +1,4 @@
-package poc.camel.protocol
+package poc.akkastream.protocol
 
 sealed trait ProtocolBackPressureACK
 
