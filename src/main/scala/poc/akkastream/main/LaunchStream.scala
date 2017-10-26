@@ -4,7 +4,7 @@ import akka.NotUsed
 import akka.actor.{ActorSystem, Props}
 import akka.stream.actor.ActorPublisher
 import akka.stream.scaladsl.{Flow, GraphDSL, RunnableGraph, Sink, Source}
-import akka.stream.{ActorMaterializer, ClosedShape}
+import akka.stream.{ActorMaterializer, ClosedShape, OverflowStrategy}
 import org.reactivestreams.Publisher
 import poc.akkastream.camel.{CamelConsumer, CamelSubscriber}
 import poc.akkastream.protocol.{ACK, INITMESSAGE, ONCOMPLETE}
@@ -18,7 +18,7 @@ object LaunchStream extends App {
 
   val source: Source[String, NotUsed] = {
     val publisher: Publisher[String] = ActorPublisher(consumerActor)
-    Source.fromPublisher(publisher)
+    Source.fromPublisher(publisher).buffer(5000, OverflowStrategy.backpressure)
   }
   val sink =
     Sink.actorRefWithAck[String](system.actorOf(Props(new CamelSubscriber(consumerActor.path))), INITMESSAGE, ACK, ONCOMPLETE, th => th.getMessage)
@@ -40,6 +40,6 @@ object LaunchStream extends App {
 
   private def publishInRabbit = {
     val publish: PublisherBase = PublisherMain.apply
-    publish.basicPublish("localhost", 8081, "hola vengo de rabbit")("consumerExchange", "cola1", "camel", 5000)
+    publish.basicPublish("localhost", 8081, "hola vengo de rabbit")("consumerExchange", "cola1", "camel", 50000)
   }
 }

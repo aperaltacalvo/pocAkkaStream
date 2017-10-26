@@ -33,6 +33,7 @@ protected class PublisherMain extends PublisherBase {
     val channel: Channel = configResult._1
     var message: String = configResult._2
 
+    println("*** PUBLISHING RABBIT... ***")
 
     def sendNMessages(numMax: Int) = {
       for (i <- 0 to numMax) {
