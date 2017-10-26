@@ -6,11 +6,11 @@ import poc.akkastream.protocol.{ACK, INITMESSAGE}
 class CamelSubscriber extends ActorSubscriber {
 
   override val requestStrategy = OneByOneRequestStrategy
-
   override def receive = {
     case msg:String =>
       println("received %s" format msg)
       sender ! ACK
+      context.actorSelection("akka://some-system/user/camelConsumer") ! ACK
     case INITMESSAGE =>
       println(s"initMessage")
       sender ! ACK
