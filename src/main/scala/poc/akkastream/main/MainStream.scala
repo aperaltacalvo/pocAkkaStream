@@ -54,7 +54,7 @@ object MainStream extends App {
 
   private def publishInRabbit = {
     val publish: PublisherBase = Publisher.apply
-    publish.basicPublish("192.168.16.172", 8081, "hola vengo de rabbit")("consumerExchange", "cola1", "camel", 5000)
+    publish.basicPublish("localhost", 8081, "hola vengo de rabbit")("consumerExchange", "cola1", "camel", 5000)
   }
 
   private def publishInKafka = {
