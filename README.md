@@ -32,8 +32,9 @@ When docker container is running you need create a cluser and topic in kafka
 Yoy can connect to management console on: `localhost/9000`
 
 1. Create cluster with the name of your choice
-2. Select Kafka Version 0.10.1.0
-3. Create some topic
+2. Put cluster zookeeper host. **kafkaserver**
+3. Select Kafka Version 0.10.1.0
+4. Create some topic
 
 In case of Windows SO, we need one more thing.
 

@@ -9,6 +9,8 @@ class CamelConsumer(actorRef: ActorRef) extends Consumer with ActorPublisher[Str
 
   def endpointUri = "rabbitmq://localhost:8081/consumerExchange?username=guest&password=guest&autoDelete=false&routingKey=camel&queue=cola1"
 
+  override def autoAck: Boolean = false
+
   def receive = {
     case Cancel => context.stop(self)
     case msg: CamelMessage => actorRef ! msg.bodyAs[String]
