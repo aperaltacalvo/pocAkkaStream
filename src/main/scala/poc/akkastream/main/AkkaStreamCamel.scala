@@ -36,14 +36,14 @@ class AkkaStreamCamel {
     publish.basicPublish("localhost", 8081, "hola vengo de rabbit", 10000)("consumerExchange", "cola1", "camel","")
   }
 
-  def consumerCamelActor = system.actorOf(Props[CamelConsumer])
+  def consumerCamelActor = system.actorOf(Props(new CamelConsumer),"camelConsumer")
 
   def sourceForCamel(consumer: ActorRef): Source[String, NotUsed] = {
     val publisher: Publisher[String] = ActorPublisher(consumer)
     Source.fromPublisher(publisher)
   }
 
-  def sinkForCamel(consumer: ActorRef) =
-    Sink.actorRefWithAck[String](system.actorOf(Props(new CamelSubscriber(consumer.path))),
+  def sinkForCamel =
+    Sink.actorRefWithAck[String](system.actorOf(Props(new CamelSubscriber)),
       INITMESSAGE, ACK, ONCOMPLETE, th => th.getMessage)
 }

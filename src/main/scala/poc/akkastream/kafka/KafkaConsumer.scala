@@ -8,16 +8,17 @@ import akka.stream.scaladsl.Sink
 import org.apache.kafka.clients.consumer.ConsumerRecord
 
 
-class KafkaConsumer extends KafkaConn with ActorPublisher[String] {
+class KafkaConsumer(actorRef: ActorRef) extends KafkaConn with ActorPublisher[String] {
 
   def consume = {
     Consumer.plainSource(consumerSettings, Subscriptions.topics("topic1"))
       .map(doSomething)
+      //.log("Log",s => println(s))
       .runWith(Sink.ignore)
   }
 
   def doSomething(record: ConsumerRecord[Array[Byte], String]): Unit = {
-    record.value().toString
+    actorRef ! record.value().toString
   }
 
   override def receive = {
