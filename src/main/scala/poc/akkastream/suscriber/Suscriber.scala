@@ -1,10 +1,9 @@
-package poc.akkastream.camel
+package poc.akkastream.suscriber
 
-import akka.actor.ActorPath
 import akka.stream.actor.{ActorSubscriber, OneByOneRequestStrategy}
 import poc.akkastream.protocol.{ACK, INITMESSAGE}
 
-class CamelSubscriber extends ActorSubscriber {
+class Subscriber extends ActorSubscriber {
 
   override val requestStrategy = OneByOneRequestStrategy
 

@@ -8,7 +8,7 @@ object LaunchStream extends App {
   implicit val system = ActorSystem("some-system")
   implicit val materializer = ActorMaterializer()
 
-  callCamelRabbitProcess
+  //callCamelRabbitProcess
   callKafkaProcess
 
   def callCamelRabbitProcess = {
