@@ -11,8 +11,6 @@ trait KafkaConn {
   implicit val system = ActorSystem("some-system")
   implicit val materializer = ActorMaterializer()
 
-  val producerSettings = ProducerSettings(system, new ByteArraySerializer, new StringSerializer)
-    .withBootstrapServers("localhost:9092")
 
   val consumerSettings = ConsumerSettings(system, new ByteArrayDeserializer, new StringDeserializer)
     .withBootstrapServers("localhost:9092")

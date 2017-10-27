@@ -7,17 +7,18 @@ import akka.stream.actor.ActorPublisher
 import akka.stream.scaladsl.{Flow, GraphDSL, RunnableGraph, Sink, Source}
 import org.reactivestreams.Publisher
 import poc.akkastream.camel.{CamelConsumer, CamelSubscriber}
+import poc.akkastream.kafka.KafkaConsumer
 import poc.akkastream.main.LaunchStream.system
 import poc.akkastream.protocol.{ACK, INITMESSAGE, ONCOMPLETE}
-import poc.akkastream.publisher.{PublisherBase, PublisherRabbitMain}
+import poc.akkastream.publisher.{PublisherBase, PublisherKafkaMain}
 
-object AkkaStreamCamel{
-  def apply: AkkaStreamCamel = new AkkaStreamCamel()
+object AkkaStreamKafka{
+  def apply: AkkaStreamKafka = new AkkaStreamKafka()
 }
 
-class AkkaStreamCamel {
+class AkkaStreamKafka {
 
-  def graphNormalCamelScenario(source: Source[String, NotUsed], sink: Sink[String, NotUsed], buffer: Int) =
+  def graphNormalKafkaScenario(source: Source[String, NotUsed], sink: Sink[String, NotUsed], buffer: Int) =
     RunnableGraph.fromGraph(GraphDSL.create() { implicit builder: GraphDSL.Builder[NotUsed] =>
       import GraphDSL.Implicits._
       val in = source.buffer(buffer, OverflowStrategy.backpressure)
@@ -30,20 +31,19 @@ class AkkaStreamCamel {
       ClosedShape
     })
 
-
-  def publishInRabbit = {
-    val publish: PublisherBase = PublisherRabbitMain.apply
-    publish.basicPublish("localhost", 8081, "hola vengo de rabbit", 10000)("consumerExchange", "cola1", "camel","")
+  def publishInKafka = {
+    val publish: PublisherBase = PublisherKafkaMain.apply
+    publish.basicPublish("localhost", 9092, "hola vengo de kafka", 1000)("","","","topic1")
   }
 
-  def consumerCamelActor = system.actorOf(Props[CamelConsumer])
+  def consumerKafkaActor = system.actorOf(Props[KafkaConsumer])
 
-  def sourceForCamel(consumer: ActorRef): Source[String, NotUsed] = {
+  def sourceForKafka(consumer: ActorRef): Source[String, NotUsed] = {
     val publisher: Publisher[String] = ActorPublisher(consumer)
     Source.fromPublisher(publisher)
   }
 
-  def sinkForCamel(consumer: ActorRef) =
+  def sinkForKafka(consumer: ActorRef) =
     Sink.actorRefWithAck[String](system.actorOf(Props(new CamelSubscriber(consumer.path))),
       INITMESSAGE, ACK, ONCOMPLETE, th => th.getMessage)
 }

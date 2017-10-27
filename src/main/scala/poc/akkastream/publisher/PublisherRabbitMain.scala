@@ -4,14 +4,14 @@ import com.rabbitmq.client.{Channel, MessageProperties}
 
 import scala.util.Random
 
-object PublisherMain{
-  def apply: PublisherMain = new PublisherMain()
+object PublisherRabbitMain{
+  def apply: PublisherRabbitMain = new PublisherRabbitMain()
 }
 
-protected class PublisherMain extends PublisherBase {
+protected class PublisherRabbitMain extends PublisherBase {
 
-  def basicPublish(host: String, port: Int, messageToSend: String) (exchangeName: String,
-                   queueStr: String, routingKey: String, numMaxToSend: Int) = {
+  def basicPublish(host: String, port: Int, messageToSend: String, numMaxToSend: Int)
+                  (exchangeName: String, queueStr: String, routingKey: String, topic: String) = {
 
     def config = {
       import com.rabbitmq.client.ConnectionFactory
@@ -44,4 +44,5 @@ protected class PublisherMain extends PublisherBase {
 
     sendNMessages(numMaxToSend)
   }
+
 }
