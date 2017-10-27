@@ -1,8 +1,7 @@
 package poc.akkastream.main
 
-import akka.actor.{ActorSystem, Props}
+import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import poc.akkastream.camel.CamelSubscriber
 
 object LaunchStream extends App {
 
