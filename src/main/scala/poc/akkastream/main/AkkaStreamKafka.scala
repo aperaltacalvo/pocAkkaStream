@@ -1,16 +1,13 @@
 package poc.akkastream.main
 
 import akka.actor.{ActorRef, Props}
-import akka.kafka.scaladsl.Consumer
-import akka.stream.actor.ActorPublisher
 import akka.stream.scaladsl.{Flow, GraphDSL, RunnableGraph, Sink, Source}
 import akka.stream.{ActorMaterializer, ClosedShape, OverflowStrategy}
-import org.reactivestreams.Publisher
 import poc.akkastream.kafka.KafkaConsumer
 import poc.akkastream.main.LaunchStream.system
 import poc.akkastream.protocol.{ACK, INITMESSAGE, ONCOMPLETE}
 import poc.akkastream.publisher.{PublisherBase, PublisherKafkaMain}
-import poc.akkastream.suscriber.{CamelSubscriber, Subscriber}
+import poc.akkastream.suscriber.Subscriber
 
 object AkkaStreamKafka {
   def apply: AkkaStreamKafka = new AkkaStreamKafka()

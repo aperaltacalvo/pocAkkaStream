@@ -25,7 +25,7 @@ object LaunchStream extends App {
   def callKafkaProcess = {
 
     val kafkaStream: AkkaStreamKafka = AkkaStreamKafka.apply
-    //kafkaStream.publishInKafka
+    kafkaStream.publishInKafka
 
     //Scenario with 1000 buffered
     //val streamActor = kafkaStream.graphNormalKafkaScenario(kafkaStream.sourceForKafka, kafkaStream.sinkForKafka(), 1000)

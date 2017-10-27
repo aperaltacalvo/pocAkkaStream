@@ -2,15 +2,15 @@ package poc.akkastream.main
 
 import akka.NotUsed
 import akka.actor.{ActorRef, Props}
-import akka.stream.{ClosedShape, OverflowStrategy}
 import akka.stream.actor.ActorPublisher
 import akka.stream.scaladsl.{Flow, GraphDSL, RunnableGraph, Sink, Source}
+import akka.stream.{ClosedShape, OverflowStrategy}
 import org.reactivestreams.Publisher
 import poc.akkastream.camel.CamelConsumer
 import poc.akkastream.main.LaunchStream.system
 import poc.akkastream.protocol.{ACK, INITMESSAGE, ONCOMPLETE}
 import poc.akkastream.publisher.{PublisherBase, PublisherRabbitMain}
-import poc.akkastream.suscriber.CamelSubscriber
+import poc.akkastream.suscriber.Subscriber
 
 import scala.util.Random
 
@@ -55,7 +55,7 @@ class AkkaStreamCamel {
   }
 
   def sinkForCamel =
-    Sink.actorRefWithAck[String](system.actorOf(Props(new CamelSubscriber)),
+    Sink.actorRefWithAck[String](system.actorOf(Props[Subscriber]),
       INITMESSAGE, ACK, ONCOMPLETE, th => th.getMessage)
 
   def getRandom(from: Int, to: Int): Int = {
