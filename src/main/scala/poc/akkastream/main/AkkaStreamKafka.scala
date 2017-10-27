@@ -3,6 +3,7 @@ package poc.akkastream.main
 import akka.actor.{ActorRef, Props}
 import akka.stream.scaladsl.{Flow, GraphDSL, RunnableGraph, Sink, Source}
 import akka.stream.{ActorMaterializer, ClosedShape, OverflowStrategy}
+import poc.akkastream.camel.CamelSubscriber
 import poc.akkastream.kafka.KafkaConsumer
 import poc.akkastream.main.LaunchStream.system
 import poc.akkastream.protocol.{ACK, INITMESSAGE, ONCOMPLETE}
@@ -26,6 +27,9 @@ class AkkaStreamKafka {
         in ~> f1 ~> f2 ~> out
         ClosedShape
     })
+
+
+  def goStream = sourceForKafka via f1 via f2 to sinkForKafka(Props[CamelSubscriber]) run()
 
   def f1 = Flow[String].map(_.toString)
 

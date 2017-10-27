@@ -9,7 +9,7 @@ object LaunchStream extends App {
   implicit val system = ActorSystem("some-system")
   implicit val materializer = ActorMaterializer()
 
-  //callCamelRabbitProcess
+  callCamelRabbitProcess
   callKafkaProcess
 
   def callCamelRabbitProcess = {
@@ -19,17 +19,19 @@ object LaunchStream extends App {
 
     //Scenario with 1000 buffered
     val camelConsumerActor = akkaStream.consumerCamelActor
-    akkaStream.graphNormalCamelScenario(akkaStream.sourceForCamel(camelConsumerActor), akkaStream.sinkForCamel, 5000).run()
+    akkaStream.graphNormalCamelScenario(akkaStream.sourceForCamel(camelConsumerActor), akkaStream.sinkForCamel, 1000).run()
 
   }
 
   def callKafkaProcess = {
+
     val kafkaStream: AkkaStreamKafka = AkkaStreamKafka.apply
     //kafkaStream.publishInKafka
 
     //Scenario with 1000 buffered
-    val actor = kafkaStream.sourceForKafka via kafkaStream.f1 via kafkaStream.f2 to kafkaStream.sinkForKafka(Props[CamelSubscriber]) run()
-    val kafkaConsumerActor = kafkaStream.consumerKafkaActor(actor)
+    //val streamActor = kafkaStream.graphNormalKafkaScenario(kafkaStream.sourceForKafka, kafkaStream.sinkForKafka(), 1000)
+    val streamActor = kafkaStream.goStream
+    val kafkaConsumerActor = kafkaStream.consumerKafkaActor(streamActor)
     kafkaConsumerActor ! "WAKE UP KAFKA CONSUMER"
   }
 
