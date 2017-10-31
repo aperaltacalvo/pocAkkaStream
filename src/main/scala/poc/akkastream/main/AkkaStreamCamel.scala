@@ -10,7 +10,7 @@ import poc.akkastream.camel.CamelConsumer
 import poc.akkastream.main.LaunchStream.system
 import poc.akkastream.protocol.{ACK, INITMESSAGE, ONCOMPLETE}
 import poc.akkastream.publisher.{PublisherBase, PublisherRabbitMain}
-import poc.akkastream.suscriber.Subscriber
+import poc.akkastream.suscriber.CamelSubscriber
 
 import scala.util.Random
 
@@ -55,7 +55,7 @@ class AkkaStreamCamel {
   }
 
   def sinkForCamel =
-    Sink.actorRefWithAck[String](system.actorOf(Props[Subscriber]),
+    Sink.actorRefWithAck[String](system.actorOf(Props[CamelSubscriber]),
       INITMESSAGE, ACK, ONCOMPLETE, th => th.getMessage)
 
   def getRandom(from: Int, to: Int): Int = {
