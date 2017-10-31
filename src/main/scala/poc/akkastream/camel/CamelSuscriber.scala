@@ -1,21 +1,21 @@
 package poc.akkastream.camel
 
-import akka.stream.actor.{ActorSubscriber, OneByOneRequestStrategy}
+import akka.stream.actor.{OneByOneRequestStrategy}
+import poc.akkastream.AbstractSubscriber
 import poc.akkastream.protocol.{ACK, INITMESSAGE}
 
-class CamelSubscriber extends ActorSubscriber {
+class CamelSubscriber extends AbstractSubscriber {
 
-  override val requestStrategy = OneByOneRequestStrategy
   override def receive = {
     case msg:String =>
-      println("received %s" format msg)
+     println("received %s" format msg)
       sender ! ACK
       context.actorSelection("akka://some-system/user/camelConsumer") ! ACK
     case INITMESSAGE =>
       println(s"initMessage")
       sender ! ACK
     case msg =>
-      println("Untyped Message %s" format msg)
+      println(s"Untyped Message $msg")
       sender ! ACK
   }
 }

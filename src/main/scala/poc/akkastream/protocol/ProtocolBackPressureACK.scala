@@ -5,4 +5,5 @@ sealed trait ProtocolBackPressureACK
 case object ACK extends ProtocolBackPressureACK
 case object INITMESSAGE extends ProtocolBackPressureACK
 case object ONCOMPLETE extends ProtocolBackPressureACK
+case object MANUAL extends ProtocolBackPressureACK
 

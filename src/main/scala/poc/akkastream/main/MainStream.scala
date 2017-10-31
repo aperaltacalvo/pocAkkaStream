@@ -1,9 +1,10 @@
 package poc.akkastream.main
 
+import akka.NotUsed
 import akka.actor.{ActorRef, ActorSystem, Props}
-import akka.stream.scaladsl.{Flow, Sink, Source}
-import akka.stream.{ActorMaterializer, OverflowStrategy}
-import poc.akkastream.camel.{CamelConsumer, CamelSubscriber}
+import akka.stream.scaladsl.{Broadcast, Concat, Flow, GraphDSL, Merge, RunnableGraph, Sink, Source, Zip}
+import akka.stream.{ActorMaterializer, ClosedShape, OverflowStrategy, SourceShape}
+import poc.akkastream.camel.{CamelConsumer, CamelSubscriber, KafkaSubscriber}
 import poc.akkastream.protocol.{ACK, INITMESSAGE, ONCOMPLETE}
 import poc.akkastream.publisher.{Publisher, PublisherBase}
 import poc.akkastream.{ActorProxy, AsyncMessageConsumer}
@@ -26,33 +27,36 @@ object MainStream extends App {
   })
 
   /** Publishing in rabbit and kafka **/
-  publishInRabbit
- // publishInKafka
+ //publishInRabbit
+ publishInKafka
   /** Publishing in rabbit and kafka **/
 
   //Define sources of akka stream
-  val sourceRabbit = initSource(bufferSize = 5000)
-    val sourceKafka = initSource(bufferSize = 50000)
+// val sourceRabbit = initSource(1)
+
+     val sourceKafka = initSource(1)
 
 
-    val sinkKafka = initSink(actorSink = Props[CamelSubscriber])
+    val sinkKafka = initSink(actorSink = Props[KafkaSubscriber])
 
 
   //Define sink of akka stream
   //Init streams
-  val sinkRabbit =  initSink(Props[CamelSubscriber])
+//  val sinkRabbit =  initSink(Props[CamelSubscriber])
 
 
-  val actorSourceRabbit = sourceRabbit via flowFormat  via flowIdentifier to sinkRabbit run()
-  val actorSourceKafka = sourceKafka via flowFormat via flowIdentifier to sinkKafka run()
+  //val actorSourceRabbit = sourceRabbit.buffer(200,OverflowStrategy.backpressure) via flowFormat  via flowIdentifier to sinkRabbit run()
+
+
+ //  val actorSourceKafka = sourceKafka.buffer(200,OverflowStrategy.backpressure) via flowFormat via flowIdentifier to sinkKafka run()
 
   //Init source actors
-  val asyncMessageActorRabbit = system.actorOf(Props(new AsyncMessageConsumer(actorSourceRabbit)))
-  val asyncMessageActorKafka = system.actorOf(Props(new AsyncMessageConsumer(actorSourceKafka)))
+  //val asyncMessageActorRabbit = system.actorOf(Props(new AsyncMessageConsumer(actorSourceRabbit)))
+  //val asyncMessageActorKafka = system.actorOf(Props(new AsyncMessageConsumer(actorSourceKafka)))
 
   //Init consumers from kafka and rabbit
-  val kafkaConsumer = initConsumersFromBrokerKafka(asyncMessageActorKafka)
-  val camelConsumer = initConsumersFromBrokerRabbit(asyncMessageActorRabbit)
+  val kafkaConsumer = initConsumersFromBrokerKafka(system.actorOf( Props[KafkaSubscriber]) )
+ //val camelConsumer = initConsumersFromBrokerRabbit(asyncMessageActorRabbit)
 
 
 
@@ -71,12 +75,12 @@ object MainStream extends App {
   }
 
   private def initSource(bufferSize: Int) = {
-    Source.actorRef(bufferSize, OverflowStrategy.fail)
+    Source.actorRef(bufferSize, OverflowStrategy.dropBuffer)
   }
 
   private def initConsumersFromBrokerKafka(actorRef: ActorRef): ActorRef = {
-    val actor = system.actorOf(Props(new KafkaConsumer(actorRef)))
-   // actor.tell("", kafkaConsumer)
+    val actor = system.actorOf(Props(new KafkaConsumer(actorRef)),"kafkaConsumer")
+    actor.tell("", kafkaConsumer)
     actor
   }
 

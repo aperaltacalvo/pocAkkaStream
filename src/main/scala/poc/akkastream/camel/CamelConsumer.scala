@@ -16,7 +16,7 @@ class CamelConsumer(actorRef: ActorRef) extends Consumer with ActorPublisher[Str
     case Cancel => context.stop(self)
     case msg: CamelMessage => rabbit=sender.path.toString
       actorRef ! msg.bodyAs[String]
-    case ACK => println(ACK)
+    case ACK =>
        context.actorSelection(rabbit) ! Ack
 
   }
